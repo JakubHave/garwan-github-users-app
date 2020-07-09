@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 
 // Serve only the static files form the dist directory
-app.use(express.static(__dirname + '/dist/git-hub-users'));
+app.use(express.static('./dist/git-hub-users'));
 
 app.get('/*', function(req,res) {
 
