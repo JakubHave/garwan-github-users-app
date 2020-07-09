@@ -8,7 +8,7 @@ const app = express();
 app.use(express.static('./dist/git-hub-users'));
 
 app.get('/*', function(req,res) {
-
+  console.log('Path: ' + path.join(__dirname, '/dist/git-hub-users/index.html'))
   res.sendFile(path.join(__dirname, '/dist/git-hub-users/index.html'));
 });
 
