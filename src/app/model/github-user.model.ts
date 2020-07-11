@@ -6,6 +6,7 @@ export class GithubUser {
   followers: number;
   followers_url: string;
   public_repos: number;
+  total_private_repos: number;
   repos_url: string;
   location: string;
   company: string;

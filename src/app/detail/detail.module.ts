@@ -8,6 +8,9 @@ import {NgbNavModule, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [DetailComponent],
+  exports: [
+    DetailComponent
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild([

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './profile/profile.component';
 import { RouterModule } from '@angular/router';
 import { RouteGuard } from '../services/route.guard';
+import {DetailModule} from '../detail/detail.module';
 
 
 
@@ -16,7 +17,8 @@ import { RouteGuard } from '../services/route.guard';
         component: ProfileComponent,
         canActivate: [RouteGuard]
       }
-    ])
+    ]),
+    DetailModule
   ]
 })
 export class ProfileModule { }

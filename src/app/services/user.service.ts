@@ -14,8 +14,9 @@ export class UserService {
 
   private gitHubApi = 'https://api.github.com';
   private usersSearchQuery = '/search/users?q=location:[location]&sort=[sort]&per_page=[per_page]&page=[page]'
-  private userFollowersQuery = '/users/[userName]/followers';
-  private userReposQuery = '/users/[userName]/repos';
+  private userFollowersQuery = '/users/[userName]/followers?per_page=[per_page]&page=[page]';
+  private userReposQuery = '/users/[userName]/repos?per_page=[per_page]&page=[page]';
+  private personalReposQuery = '/user/repos?per_page=[per_page]&page=[page]';
   private userQuery = '/users/[userName]';
 
   constructor(private http: HttpClient,
@@ -57,18 +58,38 @@ export class UserService {
           user.followers = (resArray[index] as GithubUser).followers;
           user.public_repos = (resArray[index] as GithubUser).public_repos;
         });
+
         return of<GithubUsersResult>(result);
       })
     );
   }
 
-  getAllUserRepos(userName): Observable<Repository[]> {
-    const searchQuery = this.userReposQuery.replace('[userName]', userName);
+  /*
+  *   This retrieves public repositories for arbitrary user
+  */
+  getUserRepos(userName: string, perPage: number, page: number): Observable<Repository[]> {
+    const searchQuery = this.userReposQuery.replace('[userName]', userName)
+      .replace('[per_page]', '' + perPage)
+      .replace('[page]', '' + page);
+
     return this.http.get<Repository[]>(this.gitHubApi + searchQuery);
   }
 
-  getAllUserFollowers(userName): Observable<GithubUser[]> {
-    const searchQuery = this.userFollowersQuery.replace('[userName]', userName);
+  /*
+  *   This retrieves private and public repositories for authenticated user
+  */
+  getPersonalRepos(perPage: number, page: number): Observable<Repository[]> {
+    const searchQuery = this.personalReposQuery.replace('[per_page]', '' + perPage)
+      .replace('[page]', '' + page);
+
+    return this.http.get<Repository[]>(this.gitHubApi + searchQuery);
+  }
+
+  getUserFollowers(userName: string, perPage: number, page: number): Observable<GithubUser[]> {
+    const searchQuery = this.userFollowersQuery.replace('[userName]', userName)
+      .replace('[per_page]', '' + perPage)
+      .replace('[page]', '' + page);
+
     return this.http.get<GithubUser[]>(this.gitHubApi + searchQuery);
   }
 

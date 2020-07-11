@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {GithubUser} from '../../model/github-user.model';
@@ -12,72 +12,100 @@ import {Subscription} from 'rxjs';
 })
 export class DetailComponent implements OnInit, OnDestroy {
   user: GithubUser;
-  allRepos: Repository[];
+  reposSize: number;
   repos: Repository[];
-  allFollowers: GithubUser[];
+  followersSize: number;
   followers: GithubUser[];
   activeNav = 'top';
   userSubscription: Subscription;
   reposSubscription: Subscription;
+  persReposSubscription: Subscription;
   followerSubscription: Subscription;
   routeSubscription: Subscription;
   perPage = 5;
   pageRepo = 1;
   pageFollow = 1;
+  userName: string;
+
+  @Input()
+  personalUserName: string;
 
   constructor(private userService: UserService,
               private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.routeSubscription = this.route.params.subscribe( (params: Params) => {
-      const userName = params['name'];
+      this.userName = params['name'];
+      if (this.personalUserName) {
+        this.userName = this.personalUserName;
+      }
       this.pageRepo = 1;
       this.pageFollow = 1;
-      this.getUser(userName);
-      this.getAllUserRepos(userName);
-      this.getAllUserFollowers(userName);
+      this.getUser(this.userName);
+      this.getRepoPage(1);
+      this.getUserFollowers(this.userName, this.perPage, 1);
     });
   }
 
   ngOnDestroy(): void {
     if (this.userSubscription) { this.userSubscription.unsubscribe(); }
     if (this.reposSubscription) { this.reposSubscription.unsubscribe(); }
+    if (this.persReposSubscription) { this.persReposSubscription.unsubscribe(); }
     if (this.followerSubscription) { this.followerSubscription.unsubscribe(); }
-    if ( this.routeSubscription ) { this.routeSubscription.unsubscribe(); }
+    if (this.routeSubscription) { this.routeSubscription.unsubscribe(); }
   }
 
   private getUser(userName: string): void {
     this.userSubscription = this.userService.getGithubUser(userName).subscribe(
-      user => this.user = user,
+      user => {
+        this.user = user;
+        this.reposSize = user.public_repos + (user.total_private_repos ? user.total_private_repos : 0);
+        this.followersSize = user.followers;
+      },
       err => this.userService.handleError(err)
     );
   }
 
-  private getAllUserRepos(userName: string) {
-    this.reposSubscription = this.userService.getAllUserRepos(userName).subscribe(
-      repos => {
-        this.allRepos = repos;
-        this.repos = this.allRepos.slice(0, this.perPage);
-      },
+  /*
+  *   This retrieves public repositories for arbitrary user
+  */
+  private getUserRepos(userName: string, perPage: number, page: number) {
+    this.reposSubscription = this.userService.getUserRepos(userName, perPage, page).subscribe(
+      repos => this.repos = repos,
       err =>  this.userService.handleError(err)
     );
   }
 
-  private getAllUserFollowers(userName: string) {
-    this.followerSubscription = this.userService.getAllUserFollowers(userName).subscribe(
-      followers => {
-        this.allFollowers = followers;
-        this.followers = this.allFollowers.slice(0, this.perPage);
-      },
+  /*
+  *   This retrieves private and public repositories for authenticated user
+  */
+  private getPersonalRepos(userName: string, perPage: number, page: number) {
+    this.persReposSubscription = this.userService.getPersonalRepos(perPage, page).subscribe(
+      repos => this.repos = repos,
+      err =>  this.userService.handleError(err)
+    );
+  }
+
+  private getRepoPage(pageNum: number) {
+    if (this.personalUserName) {
+      this.getPersonalRepos(this.userName, this.perPage, pageNum);
+    } else {
+      this.getUserRepos(this.userName, this.perPage, pageNum);
+    }
+  }
+
+  private getUserFollowers(userName: string, perPage: number, page: number) {
+    this.followerSubscription = this.userService.getUserFollowers(userName, perPage, page).subscribe(
+      followers => this.followers = followers,
       err =>  this.userService.handleError(err)
     );
   }
 
   pageRepoChanged(pageNum: number) {
-    this.repos = this.allRepos.slice((pageNum - 1) * this.perPage, pageNum * this.perPage);
+    this.getRepoPage(pageNum);
   }
 
   pageFollowChanged(pageNum: number) {
-    this.followers = this.allFollowers.slice((pageNum - 1) * this.perPage, pageNum * this.perPage);
+    this.getUserFollowers(this.userName, this.perPage, pageNum);
   }
 }

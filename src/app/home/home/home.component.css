@@ -2,23 +2,13 @@ header{
   background-color: azure;
 }
 
-.photo {
-  width: 150px;
-  height: 150px;
-}
-
-img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-td{
-  vertical-align: middle;
-  cursor: pointer;
-}
-
 .octocat {
   margin: 15px auto;
   width: 280px;
   height: 280px;
+}
+
+td {
+  vertical-align: middle;
+  cursor: pointer;
 }
