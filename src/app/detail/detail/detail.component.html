@@ -1,1 +1,101 @@
-<p>detail works!</p>
+<div class="container mb-5" *ngIf="user">
+  <header class="rounded-5px p-3 mb-3">
+    <h3>{{user.login}}</h3>
+  </header>
+
+  <div class="mb-3">
+    <div class="row">
+      <div class="col-md-4">
+        <img class="img-thumbnail" src="{{user.avatar_url}}">
+        <a class="btn btn-default btn-block" target="_blank" href="{{user.html_url}}">
+          <strong>View Profile on GitHub</strong>
+        </a>
+      </div>
+      <div class="col-md-8">
+        <ul class="list-group text-left">
+          <li class="list-group-item"><strong>Username: </strong>{{user.login}}</li>
+          <li class="list-group-item"><strong>Number of public repositories:</strong> {{user.public_repos}}</li>
+          <li class="list-group-item"><strong>Number of followers:</strong> {{user.followers}}</li>
+          <li class="list-group-item"><strong>Location: </strong>{{user.location}}</li>
+          <li class="list-group-item"><strong>Company: </strong>{{user.company}}</li>
+          <li class="list-group-item"><strong>Email: </strong>{{user.email}}</li>
+          <li class="list-group-item"><strong>Joined GitHub: </strong>{{user.created_at}}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="d-flex mt-5">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="activeNav" class="nav-pills" orientation="vertical">
+        <li ngbNavItem="top">
+          <a ngbNavLink>Repositories</a>
+          <ng-template ngbNavContent>
+            <div *ngIf="repos && repos.length>0">
+              <div class="table-responsive" >
+                <table class="table table-striped table-hover">
+                  <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>HTML URL</th>
+                    <th>Last update</th>
+                  </tr>
+                  </thead>
+
+                  <tbody class="font-weight-bold">
+                  <tr *ngFor="let repo of repos" >
+                    <td class="text-left">{{repo.name}}</td>
+                    <td class="text-left"><a [href]="repo.html_url">{{repo.html_url}}</a></td>
+                    <td>{{repo.updated_at}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="d-flex justify-content-center">
+                <ngb-pagination [collectionSize]="allRepos.length" [(page)]="pageRepo" [maxSize]="10" [pageSize]="5"
+                                [rotate]="true" [boundaryLinks]="true" (pageChange)="pageRepoChanged($event)">
+
+                </ngb-pagination>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+        <li ngbNavItem="bottom">
+          <a ngbNavLink class="mb-5">Followers</a>
+          <ng-template ngbNavContent>
+            <div *ngIf="followers && followers.length>0">
+              <div class="table-responsive" >
+                <table class="table table-striped table-hover">
+                  <thead>
+                  <tr>
+                    <th>Follower Photo</th>
+                    <th>Follower Name</th>
+                    <th>Follower URL</th>
+                  </tr>
+                  </thead>
+
+                  <tbody class="font-weight-bold">
+                  <tr *ngFor="let follower of followers" routerLink="/detail/{{follower.login}}">
+                    <td class="photo">
+                      <img [src]="follower.avatar_url" class="rounded-10px">
+                    </td>
+                    <td>{{follower.login}}</td>
+                    <td>{{follower.html_url}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="d-flex justify-content-center">
+                <ngb-pagination [collectionSize]="allFollowers.length" [(page)]="pageFollow" [maxSize]="10" [pageSize]="5"
+                                [rotate]="true" [boundaryLinks]="true" (pageChange)="pageFollowChanged($event)">
+                </ngb-pagination>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="ml-4"></div>
+    </div>
+  </div>
+</div>

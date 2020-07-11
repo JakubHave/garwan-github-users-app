@@ -1,45 +1,54 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {UserCredentials} from '../model/user-credentials.model';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {User} from '../model/user.model';
+import {map} from 'rxjs/operators';
 
 const LOGIN_URL = 'https://api.github.com/user';
-const USER_CREDENTIALS = 'USER_CREDENTIALS';
+const USER_DATA = 'USER_DATA';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) {}
+  private loggedUserSub: BehaviorSubject<User>;
+  public loggedUser: Observable<User>;
 
-  login(formGroup, successCallBack, errorCallBack) {
+  constructor(private http: HttpClient) {
+    this.loggedUserSub = new BehaviorSubject<User>(JSON.parse(localStorage.getItem(USER_DATA)));
+    this.loggedUser = this.loggedUserSub.asObservable();
+  }
 
-    const userCredentials = new UserCredentials(formGroup.value.username, formGroup.value.password);
-    let headers = new HttpHeaders();
-    headers =  headers.append('Authorization', 'Basic ' + btoa(userCredentials.name + ':' + userCredentials.password));
+  public get loggedUserValue(): User {
+    return this.loggedUserSub.value;
+  }
 
-    this.http.get(LOGIN_URL, {headers}
-    ).subscribe(
-      res => {
-        this.saveCredentials(userCredentials);
-        return successCallBack && successCallBack();
-      }, err => {
-        return errorCallBack && errorCallBack();
-      }
-    ) ;
+  login(token: string) {
+
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + token
+    });
+
+  //  headers =  headers.append('Authorization', 'Bearer dfc984ff3f09a31130b1da35c7765ae055692d43');
+
+    return this.http.get(LOGIN_URL, {headers})
+      .pipe(map(res => {
+          const user = new User(res['login'], token);
+          this.saveUserData(user);
+          this.loggedUserSub.next(user);
+          return res;
+        }
+      ));
   }
 
   logout() {
-    window.sessionStorage.clear();
+    localStorage.clear();
+    this.loggedUserSub.next(null);
   }
 
-  saveCredentials(userCredentials: UserCredentials) {
-    window.sessionStorage.removeItem(USER_CREDENTIALS);
-    window.sessionStorage.setItem(USER_CREDENTIALS, JSON.stringify(userCredentials));
-  }
-
-  getCredentials(): UserCredentials {
-    return JSON.parse(sessionStorage.getItem(USER_CREDENTIALS));
+  private saveUserData(userData: User) {
+    localStorage.removeItem(USER_DATA);
+    localStorage.setItem(USER_DATA, JSON.stringify(userData));
   }
 }

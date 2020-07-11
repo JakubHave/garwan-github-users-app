@@ -1,36 +1,22 @@
 <div class="col-md-12">
-  <div class="card card-container">
-
+  <div class="card card-container card-background">
     <form *ngIf="!isLoggedIn" [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-login-register">
-      <h1 class="h3 mb-3 font-weight-normal">Please login</h1>
+      <h3 class="mb-3 mt-5 font-weight-normal">Please login</h3>
+      <h6 class="mb-5">
+       If you do not have or do not know your GitHub Personal Access Token, you can generate one <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">here</a>.
+      </h6>
       <div class="form-group required">
-        <label for="username" class="sr-only">Username</label>
-        <input type="text" id="username" formControlName="username" class="form-control" placeholder="Username" required>
-        <div *ngIf="userForm.controls['username'].invalid &&
-            (userForm.controls['username'].dirty || userForm.controls['username'].touched)" class="alert alert-danger">
-          <div *ngIf="userForm.controls['username'].errors.required">
-            Name is required.
+        <input type="text" id="token" formControlName="token" class="form-control" placeholder="Your GitHub Personal Access Token" required>
+        <div *ngIf="userForm.controls['token'].invalid &&
+            (userForm.controls['token'].dirty || userForm.controls['token'].touched)" class="alert alert-danger">
+          <div *ngIf="userForm.controls['token'].errors.required">
+            Token is required.
           </div>
         </div>
       </div>
 
-      <div class="form-group required">
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password" required>
-        <div *ngIf="userForm.controls['password'].invalid &&
-            (userForm.controls['password'].dirty || userForm.controls['password'].touched)" class="alert alert-danger">
-          <div *ngIf="userForm.controls['password'].errors.required">
-            Password is required.
-          </div>
-        </div>
-      </div>
       <button class="btn btn-lg btn-primary btn-block" type="submit" [disabled]="!userForm.valid">Login</button>
     </form>
-
-    <div class="success-div" *ngIf="isLoggedIn">
-      <i class="icon fas fa-check-circle fa-4x"></i>
-      <h4 class="mt-5">Successfully logged in! </h4>
-    </div>
   </div>
 </div>
 

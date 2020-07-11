@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './profile/profile.component';
-import {RouterModule} from '@angular/router';
-import {DetailComponent} from '../detail/detail/detail.component';
+import { RouterModule } from '@angular/router';
+import { RouteGuard } from '../services/route.guard';
 
 
 
@@ -13,7 +13,8 @@ import {DetailComponent} from '../detail/detail/detail.component';
     RouterModule.forChild([
       {
         path: 'profile',
-        component: ProfileComponent
+        component: ProfileComponent,
+        canActivate: [RouteGuard]
       }
     ])
   ]

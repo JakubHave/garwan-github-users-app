@@ -10,6 +10,8 @@ import {RouterModule, Routes} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {ToastrModule} from 'ngx-toastr';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
+import {authInterceptorProviders} from './services/auth.http-interceptor';
 
 const appRoutes: Routes = [
   {
@@ -22,16 +24,20 @@ const appRoutes: Routes = [
   },
   {
     path: 'profile',
-    loadChildren: () => import('./profile/profile/profile.component').then(m => m.ProfileComponent)
+    loadChildren: () => import('./profile/profile/profile.component').then(m => m.ProfileComponent),
   },
   {
-    path: 'detail',
+    path: 'detail/:name',
     loadChildren: () => import('./detail/detail/detail.component').then(m => m.DetailComponent)
   },
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];
 
@@ -48,9 +54,10 @@ const appRoutes: Routes = [
     HomeModule,
     DetailModule,
     ProfileModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbPaginationModule
   ],
-  providers: [],
+  providers: [authInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

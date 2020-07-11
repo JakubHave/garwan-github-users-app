@@ -1,0 +1,18 @@
+
+a {
+  color: white;
+  border-radius: 5px;
+}
+
+a:hover:not(.active) {
+  background-color: #383e56;
+}
+
+.active {
+  background-color: #6886c5;
+}
+
+.custom-navbar{
+  background-color: #596e79;
+  color: #ffffff;
+}
