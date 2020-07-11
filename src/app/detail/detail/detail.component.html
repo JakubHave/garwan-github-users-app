@@ -35,7 +35,7 @@
             <div *ngIf="repos && repos.length>0">
               <div class="table-responsive" >
                 <table class="table table-striped table-hover">
-                  <thead>
+                  <thead class="thead-light">
                   <tr>
                     <th>Name</th>
                     <th>HTML URL</th>
@@ -56,9 +56,11 @@
               <div class="d-flex justify-content-center">
                 <ngb-pagination [collectionSize]="reposSize" [(page)]="pageRepo" [maxSize]="10" [pageSize]="perPage"
                                 [rotate]="true" [boundaryLinks]="true" (pageChange)="pageRepoChanged($event)">
-
                 </ngb-pagination>
               </div>
+            </div>
+            <div *ngIf="!repos || repos.length==0" class="mt-2">
+              No repositories
             </div>
           </ng-template>
         </li>
@@ -66,9 +68,9 @@
           <a ngbNavLink class="mb-5">Followers</a>
           <ng-template ngbNavContent>
             <div *ngIf="followers && followers.length>0">
-              <div class="table-responsive" >
+              <div class="table-responsive">
                 <table class="table table-striped table-hover">
-                  <thead>
+                  <thead class="thead-light">
                   <tr>
                     <th>Follower Photo</th>
                     <th>Follower Name</th>
@@ -93,6 +95,9 @@
                                 [rotate]="true" [boundaryLinks]="true" (pageChange)="pageFollowChanged($event)">
                 </ngb-pagination>
               </div>
+            </div>
+            <div *ngIf="!followers || followers.length==0" class="mt-5">
+              No followers
             </div>
           </ng-template>
         </li>

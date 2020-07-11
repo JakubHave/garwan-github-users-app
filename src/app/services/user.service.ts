@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {switchMap} from 'rxjs/operators';
-import {GithubUsersResult} from '../model/githubUsers-result.model';
+import {GithubUsersResult} from '../model/github-result.model';
 import {forkJoin, Observable, of} from 'rxjs';
 import {GithubUser} from '../model/github-user.model';
 import {ToastrService} from 'ngx-toastr';
 import {Repository} from '../model/repository.model';
+import {Issue} from '../model/issue.model';
+import * as parse from 'parse-link-header';
+import {IssueResult} from '../model/issue-result.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +16,11 @@ import {Repository} from '../model/repository.model';
 export class UserService {
 
   private gitHubApi = 'https://api.github.com';
-  private usersSearchQuery = '/search/users?q=location:[location]&sort=[sort]&per_page=[per_page]&page=[page]'
+  private usersSearchQuery = '/search/users?q=location:[location]&sort=[sort]&per_page=[per_page]&page=[page]';
   private userFollowersQuery = '/users/[userName]/followers?per_page=[per_page]&page=[page]';
   private userReposQuery = '/users/[userName]/repos?per_page=[per_page]&page=[page]';
   private personalReposQuery = '/user/repos?per_page=[per_page]&page=[page]';
+  private issueQuery = '/issues?filter=all&state=all&per_page=[per_page]&page=[page]';
   private userQuery = '/users/[userName]';
 
   constructor(private http: HttpClient,
@@ -93,6 +97,24 @@ export class UserService {
     return this.http.get<GithubUser[]>(this.gitHubApi + searchQuery);
   }
 
+  /*
+  *   This retrieves issues and last page number of issues pagination for authenticated user
+  */
+  getIssues(perPage: number, page: number): Observable<IssueResult> {
+    const searchQuery = this.issueQuery.replace('[per_page]', '' + perPage)
+      .replace('[page]', '' + page);
+
+    return this.http.get<Issue[]>(this.gitHubApi + searchQuery, { observe: 'response' }).pipe(
+      switchMap(res => {
+        const headersLink = res.headers.get('Link');
+        const issueResult = new IssueResult();
+        issueResult.lastPageNum = parse(headersLink)['last']['page'];
+        issueResult.issues = res.body;
+        return of(issueResult);
+      })
+    );
+  }
+
   handleError(err: any) {
     if (err.status === 403) {
       this.toastrService.error('Sorry, rate limit on server exceeded. Please wait 60 seconds and try again.', 'Error');
@@ -100,4 +122,6 @@ export class UserService {
       this.toastrService.error(err.message, 'Error');
     }
   }
+
+
 }

@@ -4,6 +4,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { RouterModule } from '@angular/router';
 import { RouteGuard } from '../services/route.guard';
 import {DetailModule} from '../detail/detail.module';
+import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -18,7 +19,8 @@ import {DetailModule} from '../detail/detail.module';
         canActivate: [RouteGuard]
       }
     ]),
-    DetailModule
+    DetailModule,
+    NgbPaginationModule
   ]
 })
 export class ProfileModule { }

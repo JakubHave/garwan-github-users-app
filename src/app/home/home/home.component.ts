@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {GithubUser} from '../../model/github-user.model';
-import {GithubUsersResult} from '../../model/githubUsers-result.model';
+import {GithubUsersResult} from '../../model/github-result.model';
 import {FormBuilder, Validators} from '@angular/forms';
 import {UserSortValues} from '../../model/user-sort.model';
 import {ToastrService} from 'ngx-toastr';
