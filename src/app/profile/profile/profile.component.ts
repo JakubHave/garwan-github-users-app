@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.authService.loggedUserValue) {
-      this.userName = this.authService.loggedUserValue.name;
+      this.userName = this.authService.loggedUserValue.login;
 
       this.getIssues(this.perPage, 1);
     }

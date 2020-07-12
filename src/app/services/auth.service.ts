@@ -7,16 +7,22 @@ import {map} from 'rxjs/operators';
 const LOGIN_URL = 'https://api.github.com/user';
 const USER_DATA = 'USER_DATA';
 
+// OAuth
+const AUTHORIZE_URL = 'https://github.com/login/oauth/authorize';
+// this should be kept in environment variable
+const CLIENT_ID = '2ca676099c309d54b713';
+const SESSION_ENDPOINT = '/session';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
   private loggedUserSub: BehaviorSubject<User>;
-  public loggedUser: Observable<User>;
+  loggedUser: Observable<User>;
 
   constructor(private http: HttpClient) {
-    this.loggedUserSub = new BehaviorSubject<User>(JSON.parse(localStorage.getItem(USER_DATA)));
+    this.loggedUserSub = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem(USER_DATA)));
     this.loggedUser = this.loggedUserSub.asObservable();
   }
 
@@ -40,13 +46,26 @@ export class AuthService {
       ));
   }
 
+  loginOAuth() {
+    window.location.href = `${AUTHORIZE_URL}?scope=user,repo&client_id=${CLIENT_ID}`;
+  }
+
+  getOAuthSessionData(): Observable<any> {
+   return this.http.get(SESSION_ENDPOINT);
+  }
+
   logout() {
-    localStorage.clear();
+    sessionStorage.clear();
     this.loggedUserSub.next(null);
   }
 
+  saveUserDataFromOAuth(userData: User) {
+    this.loggedUserSub.next(userData);
+    this.saveUserData(userData);
+  }
+
   private saveUserData(userData: User) {
-    localStorage.removeItem(USER_DATA);
-    localStorage.setItem(USER_DATA, JSON.stringify(userData));
+    sessionStorage.removeItem(USER_DATA);
+    sessionStorage.setItem(USER_DATA, JSON.stringify(userData));
   }
 }

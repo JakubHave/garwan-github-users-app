@@ -11,7 +11,6 @@ import {first} from 'rxjs/operators';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  isLoggedIn = false;
   error: any;
   userForm = this.formBuilder.group({
     token: ['', Validators.required],
@@ -34,11 +33,15 @@ export class LoginComponent implements OnInit {
       .pipe(first())
       .subscribe(
         data => {
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/home']);
         },
         error => {
           this.error = error;
           this.toastrService.error('Could not login with specified token!', 'Error');
         });
+  }
+
+  loginOAuth() {
+    this.authService.loginOAuth();
   }
 }

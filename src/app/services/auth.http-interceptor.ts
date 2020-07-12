@@ -9,10 +9,10 @@ export class AuthHttpInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    if (this.authService.loggedUserValue && this.authService.loggedUserValue.token) {
+    if (this.authService.loggedUserValue && this.authService.loggedUserValue.access_token) {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${this.authService.loggedUserValue.token}`
+          Authorization: `Bearer ${this.authService.loggedUserValue.access_token}`
         }
       });
     }

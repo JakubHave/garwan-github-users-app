@@ -1,7 +1,7 @@
 
 export class User {
 
-  constructor(public name: string,
-              public token: string) {}
+  constructor(public login: string,
+              public access_token: string) {}
 
 }

@@ -5,8 +5,10 @@ import {GithubUsersResult} from '../../model/github-result.model';
 import {FormBuilder, Validators} from '@angular/forms';
 import {UserSortValues} from '../../model/user-sort.model';
 import {ToastrService} from 'ngx-toastr';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
+import {AuthService} from '../../services/auth.service';
+import {User} from '../../model/user.model';
 
 @Component({
   selector: 'app-home',
@@ -26,10 +28,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   });
 
   constructor(private userService: UserService,
+              private authService: AuthService,
               private formBuilder: FormBuilder,
               private toastrService: ToastrService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (!this.authService.loggedUserValue) {
+      this.authService.getOAuthSessionData()
+      // unsubscribe observable on unsubscribe$ emission in ngOnDestroy
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(
+        sessionData => this.authService.saveUserDataFromOAuth(sessionData as User)
+      );
+    }
+  }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();

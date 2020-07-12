@@ -64,7 +64,10 @@ export class DetailComponent implements OnInit, OnDestroy {
       .subscribe(
       user => {
         this.user = user;
-        this.reposSize = user.public_repos + (user.total_private_repos ? user.total_private_repos : 0);
+        this.reposSize = user.public_repos;
+        if (this.personalUserName && user.total_private_repos) {
+          this.reposSize += user.total_private_repos;
+        }
         this.followersSize = user.followers;
       },
       err => this.userService.handleError(err)

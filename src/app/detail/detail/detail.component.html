@@ -15,7 +15,7 @@
         <ul class="list-group text-left">
           <li class="list-group-item"><strong>Username: </strong>{{user.login}}</li>
           <li class="list-group-item"><strong>Number of public repositories:</strong> {{user.public_repos}}</li>
-          <li *ngIf="user.total_private_repos" class="list-group-item">
+          <li *ngIf="personalUserName && user.total_private_repos" class="list-group-item">
             <strong>Number of private repositories:</strong> {{user.total_private_repos}}
           </li>
           <li class="list-group-item"><strong>Number of followers:</strong> {{user.followers}}</li>
