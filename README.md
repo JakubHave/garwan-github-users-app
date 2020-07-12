@@ -1,6 +1,8 @@
 # garwan-github-users-app
-This application displays information about GitHub users (e.g. repositories, followers).
-There is also a possibility to log in with GitHub token and see private information (e.g. issues)
+This application displays information about GitHub users, which can be searched by location, and sorted by number of repositories, followers and date of joining GitHub.
+There is also a possibility to log in with GitHub Personal Access Token or OAuth 2.0 and see private information (e.g. issues).
+
+You can see this app live on: https://github-users-garwan.herokuapp.com
 
 To run this application:
 * clone this repository
@@ -11,5 +13,4 @@ To run this application:
    (btw. `npm install` creates the artefact already as it runs postinstall script `ng build --aot --prod`)
 * you can test the artefact locally by running `node server.js`, which starts ExpressJS server with the artefact on http://localhost:8080
 
-Note: For local development, to use the login by GitHub account via OAuth 2.0 you need to start the application by `node server.js` in order to start (ExpressJS) server which listens
-on authentication response from GitHub and sends it further to frontend.  
+Note: For local development, you can not use login via OAuth 2.0 out of the box.

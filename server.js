@@ -6,8 +6,8 @@ const request = require("request");
 
 const TOKEN_URL = 'https://github.com/login/oauth/access_token';
 const API_URL = 'https://api.github.com/user';
-const REDIRECT_URI_LOCAL = 'http://localhost:8080/callback';
-const REDIRECT_URI_HEROKU = 'https://github-users-garwan.herokuapp.com/callback';
+// const REDIRECT_URI_LOCAL = 'http://localhost:8080/callback';
+const REDIRECT_URI = 'https://github-users-garwan.herokuapp.com/callback';
 
 // This should be kept in environment variable
 const CLIENT_ID = "2ca676099c309d54b713";
@@ -54,7 +54,7 @@ app.get('/callback', (req, res) => {
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
         code: code,
-        redirect_uri: REDIRECT_URI_HEROKU
+        redirect_uri: REDIRECT_URI
       }
     },
     function(err, response, body) {
