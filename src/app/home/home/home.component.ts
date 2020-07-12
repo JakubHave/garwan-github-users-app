@@ -63,4 +63,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   pageChanged(pageNum: number) {
     this.refreshUsers(this.locationForm.controls['location'].value, this.locationForm.controls['sortBy'].value, this.perPage, pageNum);
   }
+
+  gotoPage(pageNum: number) {
+    if (pageNum > Math.ceil(this.totalUsers / this.perPage)) {
+      this.toastrService.error('There is no page with number ' + pageNum, 'Error');
+      return;
+    }
+    this.page = pageNum;
+    this.pageChanged(pageNum);
+  }
 }

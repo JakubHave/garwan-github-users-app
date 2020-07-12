@@ -3,8 +3,9 @@ import {UserService} from '../../services/user.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {GithubUser} from '../../model/github-user.model';
 import {Repository} from '../../model/repository.model';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-detail',
@@ -28,7 +29,8 @@ export class DetailComponent implements OnInit, OnDestroy {
   personalUserName: string;
 
   constructor(private userService: UserService,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private toastrService: ToastrService) { }
 
   ngOnInit(): void {
     this.route.params
@@ -119,5 +121,23 @@ export class DetailComponent implements OnInit, OnDestroy {
 
   pageFollowChanged(pageNum: number) {
     this.getUserFollowers(this.userName, this.perPage, pageNum);
+  }
+
+  gotoPageRepo(pageNum: number) {
+    if (pageNum > Math.ceil(this.reposSize / this.perPage)) {
+      this.toastrService.error('There is no page with number ' + pageNum, 'Error');
+      return;
+    }
+    this.pageRepo = pageNum;
+    this.pageRepoChanged(pageNum);
+  }
+
+  gotoPageFollow(pageNum: number) {
+    if (pageNum > Math.ceil(this.followersSize / this.perPage)) {
+      this.toastrService.error('There is no page with number ' + pageNum, 'Error');
+      return;
+    }
+    this.pageFollow = pageNum;
+    this.pageFollowChanged(pageNum);
   }
 }

@@ -4,6 +4,7 @@ import {Issue} from '../../model/issue.model';
 import {UserService} from '../../services/user.service';
 import {Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile',
@@ -14,13 +15,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   userName: string;
   issues: Issue[];
-  pageIssue = 1;
+  page = 1;
   perPage = 5;
   issuesSizeCeil: number;
   unsubscribe$ = new Subject<void>();
 
   constructor(private authService: AuthService,
-              private userService: UserService) { }
+              private userService: UserService,
+              private toastrService: ToastrService) { }
 
   ngOnInit(): void {
     if (this.authService.loggedUserValue) {
@@ -33,10 +35,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-  }
-
-  pageIssueChanged(pageNum: number) {
-    this.getIssues(this.perPage, pageNum);
   }
 
   private getIssues(perPage: number, pageNum: number) {
@@ -52,5 +50,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
       }, err => this.userService.handleError(err)
     );
+  }
+
+  pageIssueChanged(pageNum: number) {
+    this.getIssues(this.perPage, pageNum);
+  }
+
+  gotoPage(pageNum: number) {
+    if (pageNum > Math.ceil(this.issuesSizeCeil / this.perPage)) {
+      this.toastrService.error('There is no page with number ' + pageNum, 'Error');
+      return;
+    }
+    this.page = pageNum;
+    this.pageIssueChanged(pageNum);
   }
 }
