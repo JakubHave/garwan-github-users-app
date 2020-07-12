@@ -3,7 +3,8 @@ import {UserService} from '../../services/user.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {GithubUser} from '../../model/github-user.model';
 import {Repository} from '../../model/repository.model';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-detail',
@@ -17,11 +18,7 @@ export class DetailComponent implements OnInit, OnDestroy {
   followersSize: number;
   followers: GithubUser[];
   activeNav = 'top';
-  userSubscription: Subscription;
-  reposSubscription: Subscription;
-  persReposSubscription: Subscription;
-  followerSubscription: Subscription;
-  routeSubscription: Subscription;
+  unsubscribe$ = new Subject<void>();
   perPage = 5;
   pageRepo = 1;
   pageFollow = 1;
@@ -34,29 +31,35 @@ export class DetailComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.routeSubscription = this.route.params.subscribe( (params: Params) => {
-      this.userName = params['name'];
-      if (this.personalUserName) {
-        this.userName = this.personalUserName;
+    this.route.params
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution,
+    // another option is to use async pipe in html
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
+      (params: Params) => {
+        this.userName = params['name'];
+        if (this.personalUserName) {
+          this.userName = this.personalUserName;
+        }
+        this.pageRepo = 1;
+        this.pageFollow = 1;
+        this.getUser(this.userName);
+        this.getRepoPage(1);
+        this.getUserFollowers(this.userName, this.perPage, 1);
       }
-      this.pageRepo = 1;
-      this.pageFollow = 1;
-      this.getUser(this.userName);
-      this.getRepoPage(1);
-      this.getUserFollowers(this.userName, this.perPage, 1);
-    });
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
-    if (this.reposSubscription) { this.reposSubscription.unsubscribe(); }
-    if (this.persReposSubscription) { this.persReposSubscription.unsubscribe(); }
-    if (this.followerSubscription) { this.followerSubscription.unsubscribe(); }
-    if (this.routeSubscription) { this.routeSubscription.unsubscribe(); }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private getUser(userName: string): void {
-    this.userSubscription = this.userService.getGithubUser(userName).subscribe(
+    this.userService.getGithubUser(userName)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       user => {
         this.user = user;
         this.reposSize = user.public_repos + (user.total_private_repos ? user.total_private_repos : 0);
@@ -70,7 +73,10 @@ export class DetailComponent implements OnInit, OnDestroy {
   *   This retrieves public repositories for arbitrary user
   */
   private getUserRepos(userName: string, perPage: number, page: number) {
-    this.reposSubscription = this.userService.getUserRepos(userName, perPage, page).subscribe(
+    this.userService.getUserRepos(userName, perPage, page)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       repos => this.repos = repos,
       err =>  this.userService.handleError(err)
     );
@@ -80,7 +86,10 @@ export class DetailComponent implements OnInit, OnDestroy {
   *   This retrieves private and public repositories for authenticated user
   */
   private getPersonalRepos(userName: string, perPage: number, page: number) {
-    this.persReposSubscription = this.userService.getPersonalRepos(perPage, page).subscribe(
+    this.userService.getPersonalRepos(perPage, page)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       repos => this.repos = repos,
       err =>  this.userService.handleError(err)
     );
@@ -95,7 +104,10 @@ export class DetailComponent implements OnInit, OnDestroy {
   }
 
   private getUserFollowers(userName: string, perPage: number, page: number) {
-    this.followerSubscription = this.userService.getUserFollowers(userName, perPage, page).subscribe(
+    this.userService.getUserFollowers(userName, perPage, page)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       followers => this.followers = followers,
       err =>  this.userService.handleError(err)
     );

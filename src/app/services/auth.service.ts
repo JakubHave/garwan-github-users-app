@@ -30,8 +30,6 @@ export class AuthService {
       Authorization: 'Bearer ' + token
     });
 
-  //  headers =  headers.append('Authorization', 'Bearer dfc984ff3f09a31130b1da35c7765ae055692d43');
-
     return this.http.get(LOGIN_URL, {headers})
       .pipe(map(res => {
           const user = new User(res['login'], token);

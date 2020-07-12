@@ -5,7 +5,8 @@ import {GithubUsersResult} from '../../model/github-result.model';
 import {FormBuilder, Validators} from '@angular/forms';
 import {UserSortValues} from '../../model/user-sort.model';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   userSortValues = Object.keys(UserSortValues);
   totalUsers = 0;
   users: GithubUser[];
-  userSubscription: Subscription;
+  unsubscribe$ = new Subject<void>();
   locationForm = this.formBuilder.group({
     location: ['', Validators.required],
     sortBy: [this.userSortValues[0], Validators.required]
@@ -31,7 +32,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   ngOnDestroy(): void {
-    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   onSubmit() {
@@ -39,7 +41,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private refreshUsers(location: string, sortBy: string, perPage: number, page: number) {
-    this.userSubscription = this.userService.getGithubUsers(location, sortBy, perPage, page).subscribe(
+    this.userService.getGithubUsers(location, sortBy, perPage, page)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+    // another option is to use async pipe in html
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       res => {
         this.totalUsers = (res as GithubUsersResult).totalCount;
         this.users = (res as GithubUsersResult).githubUsers;

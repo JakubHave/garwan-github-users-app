@@ -6,8 +6,6 @@ import { RouteGuard } from '../services/route.guard';
 import {DetailModule} from '../detail/detail.module';
 import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
-
-
 @NgModule({
   declarations: [ProfileComponent],
   imports: [

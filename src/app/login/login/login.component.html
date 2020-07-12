@@ -1,5 +1,5 @@
-<div class="col-md-12">
-  <div class="card card-container card-background">
+<div class="col-md-12 rounded-5px p-5">
+  <div class="card card-background">
     <form *ngIf="!isLoggedIn" [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-login-register">
       <h3 class="mb-3 mt-5 font-weight-normal">Please login</h3>
       <h6 class="mb-5">
@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block" type="submit" [disabled]="!userForm.valid">Login</button>
+      <button class="btn btn-lg btn-primary btn-block mb-3" type="submit" [disabled]="!userForm.valid">Login</button>
     </form>
   </div>
 </div>

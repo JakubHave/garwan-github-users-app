@@ -98,7 +98,7 @@ export class UserService {
   }
 
   /*
-  *   This retrieves issues and last page number of issues pagination for authenticated user
+  *   This retrieves issues and last page number (from response header Link) of issues pagination for authenticated user
   */
   getIssues(perPage: number, page: number): Observable<IssueResult> {
     const searchQuery = this.issueQuery.replace('[per_page]', '' + perPage)
@@ -108,7 +108,8 @@ export class UserService {
       switchMap(res => {
         const headersLink = res.headers.get('Link');
         const issueResult = new IssueResult();
-        issueResult.lastPageNum = parse(headersLink)['last']['page'];
+        const lastLink = parse(headersLink)['last'];
+        issueResult.lastPageNum = lastLink ? lastLink['page'] : undefined;
         issueResult.issues = res.body;
         return of(issueResult);
       })

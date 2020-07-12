@@ -2,7 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {Issue} from '../../model/issue.model';
 import {UserService} from '../../services/user.service';
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +17,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   pageIssue = 1;
   perPage = 5;
   issuesSizeCeil: number;
-  issuesSubscription: Subscription;
+  unsubscribe$ = new Subject<void>();
 
   constructor(private authService: AuthService,
               private userService: UserService) { }
@@ -30,18 +31,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.issuesSubscription) { this.issuesSubscription.unsubscribe(); }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   pageIssueChanged(pageNum: number) {
-
+    this.getIssues(this.perPage, pageNum);
   }
 
   private getIssues(perPage: number, pageNum: number) {
-    this.issuesSubscription = this.userService.getIssues(perPage, 1).subscribe(
+    this.userService.getIssues(perPage, pageNum)
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution,
+    // another option is to use async pipe in html
+      .pipe(takeUntil(this.unsubscribe$), take(1))
+      .subscribe(
       res => {
         this.issues = res.issues;
-        this.issuesSizeCeil = res.lastPageNum * perPage;
+        if (res.lastPageNum) {
+          this.issuesSizeCeil = res.lastPageNum * perPage;
+        }
       }, err => this.userService.handleError(err)
     );
   }
