@@ -32,9 +32,8 @@ export class DetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params
-    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution,
-    // another option is to use async pipe in html
-      .pipe(takeUntil(this.unsubscribe$), take(1))
+    // unsubscribe observable on unsubscribe$ emission in ngOnDestroy
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(
       (params: Params) => {
         this.userName = params['name'];
@@ -58,6 +57,7 @@ export class DetailComponent implements OnInit, OnDestroy {
   private getUser(userName: string): void {
     this.userService.getGithubUser(userName)
     // unsubscribe observable on unsubscribe$ emission in ngOnDestroy or after first execution
+    // another option is to use async pipe in html
       .pipe(takeUntil(this.unsubscribe$), take(1))
       .subscribe(
       user => {
