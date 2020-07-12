@@ -10,3 +10,6 @@ To run this application:
 * for building a deployable artefact run `ng build --aot --prod` which creates an artefact under `/dist` folder
    (btw. `npm install` creates the artefact already as it runs postinstall script `ng build --aot --prod`)
 * you can test the artefact locally by running `node server.js`, which starts ExpressJS server with the artefact on http://localhost:8080
+
+Note: For local development, to use the login by GitHub account via OAuth 2.0 you need to start the application by `node server.js` in order to start (ExpressJS) server which listens
+on authentication response from GitHub and sends it further to frontend.  
