@@ -108,7 +108,7 @@ export class UserService {
       switchMap(res => {
         const headersLink = res.headers.get('Link');
         const issueResult = new IssueResult();
-        const lastLink = parse(headersLink)['last'];
+        const lastLink = headersLink ? parse(headersLink)['last'] : null;
         issueResult.lastPageNum = lastLink ? lastLink['page'] : undefined;
         issueResult.issues = res.body;
         return of(issueResult);
