@@ -1,5 +1,6 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {User} from '../model/user.model';
 import {map} from 'rxjs/operators';
@@ -21,7 +22,7 @@ export class AuthService {
   private loggedUserSub: BehaviorSubject<User>;
   loggedUser: Observable<User>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, @Inject(DOCUMENT) private document: Document) {
     this.loggedUserSub = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem(USER_DATA)));
     this.loggedUser = this.loggedUserSub.asObservable();
   }
@@ -47,7 +48,7 @@ export class AuthService {
   }
 
   loginOAuth() {
-    window.location.href = `${AUTHORIZE_URL}?scope=user,repo&client_id=${CLIENT_ID}`;
+    this.document.location.href = `${AUTHORIZE_URL}?scope=user,repo&client_id=${CLIENT_ID}`;
   }
 
   getOAuthSessionData(): Observable<any> {
