@@ -1,11 +1,12 @@
 import {Component, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {UserService} from '../../services/user.service';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {GithubUser} from '../../model/github-user.model';
 import {Repository} from '../../model/repository.model';
 import {Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {ToastrService} from 'ngx-toastr';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-detail',
@@ -29,10 +30,20 @@ export class DetailComponent implements OnInit, OnDestroy {
   personalUserName: string;
 
   constructor(private userService: UserService,
+              private authService: AuthService,
               private route: ActivatedRoute,
+              private router: Router,
               private toastrService: ToastrService) { }
 
   ngOnInit(): void {
+    // this is the case when logged in user closes window without logging out
+    // i.e. session data are removed and we need to do logout
+    console.log('this.router.url ' + this.router.url);
+    if (this.router.url === '/profile' && !this.authService.loggedUserValue?.access_token) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
+
     this.route.params
     // unsubscribe observable on unsubscribe$ emission in ngOnDestroy
       .pipe(takeUntil(this.unsubscribe$))

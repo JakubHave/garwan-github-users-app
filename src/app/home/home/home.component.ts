@@ -38,7 +38,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       // unsubscribe observable on unsubscribe$ emission in ngOnDestroy
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(
-        sessionData => this.authService.saveUserDataFromOAuth(sessionData as User)
+        sessionData => this.authService.saveUserDataFromOAuth(sessionData as User),
+          error => console.log('Backend endpoint /session for OAuh 2.0 is reachable only when app is started by server.js')
       );
     }
   }

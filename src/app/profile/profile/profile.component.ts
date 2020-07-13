@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
               private toastrService: ToastrService) { }
 
   ngOnInit(): void {
-    if (this.authService.loggedUserValue) {
+    if (this.authService.loggedUserValue?.login && this.authService.loggedUserValue?.access_token) {
       this.userName = this.authService.loggedUserValue.login;
 
       this.getIssues(this.perPage, 1);
