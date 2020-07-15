@@ -49,7 +49,7 @@ export class UserService {
             result.githubUsers.push(new GithubUser(user['login'], user['avatar_url'], 0, 0));
             users.push(this.getGithubUser(user['login']));
           });
-          return forkJoin(of(result), ...users);
+          return forkJoin([of(result), ...users]);
         }
       ),
       switchMap(res => {
