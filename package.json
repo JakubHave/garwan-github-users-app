@@ -29,7 +29,7 @@
     "express-session": "^1.17.1",
     "jquery": "^3.5.1",
     "ngx-toastr": "^12.1.0",
-    "parse-link-header": "^1.0.1",
+    "parse-link-header": "^2.0.0",
     "path": "^0.12.7",
     "popper.js": "^1.16.1",
     "request": "^2.88.2",
